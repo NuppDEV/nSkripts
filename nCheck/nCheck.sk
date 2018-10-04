@@ -1,0 +1,118 @@
+# KONFIGURACJA #
+options:
+	przyznanie: 3 #Na ile dni ban jezeli gracz sie przyzna.
+	logout: 10 #Na ile dni ban jezeli gracz sie wyloguje.
+	cheaty: 10 #Na ile dni ban jezeli gracz posiada cheaty.
+
+# SKRYPT - NIE ZMIENIAC #
+command /check [<text>] [<player>]:
+	aliases: sprawdz, ncheck
+	trigger:
+		if player has permission "n.check":
+			if arg-1 is not set:
+				send "&8[+]&8&m-----------------&8[ &a&lNCHECK &8]&8&m-----------------&8[+]"
+				send "&8» &a/check spawn &8- &7Teleportuje w miejsce sprawdzania"
+				send "&8» &a/check setspawn &8- &7Ustawia miejsce sprawdzania"
+				send "&8» &a/check gracz <gracz> &8- &7Sprawdza gracza"
+				send "&8» &a/check status <gracz> &8- &7Status gracza"
+				send "&8» &a/check czysty <gracz> &8- &7Gracz jest czysty"
+				send "&8» &a/check cheater <gracz> &8- &7Gracz jest cheaterem"
+				send "&8» &a/check przyznanie <gracz> &8- &7Gracz przyznal sie do cheatow"
+				send "&8[+]&8&m-----------------&8[ &a&lNCHECK &8]&8&m-----------------&8[+]"
+			if arg 1 isn't "spawn" or "setspawn" or "sprawdz" or "czysty" or "przyznanie" or "cheaty" or "status":
+				send "&8[+]&8&m-----------------&8[ &a&lNCHECK &8]&8&m-----------------&8[+]"
+				send "&8» &a/check spawn &8- &7Teleportuje w miejsce sprawdzania"
+				send "&8» &a/check setspawn &8- &7Ustawia miejsce sprawdzania"
+				send "&8» &a/check gracz <gracz> &8- &7Sprawdza gracza"
+				send "&8» &a/check status <gracz> &8- &7Status gracza"
+				send "&8» &a/check czysty <gracz> &8- &7Gracz jest czysty"
+				send "&8» &a/check cheater <gracz> &8- &7Gracz jest cheaterem"
+				send "&8» &a/check przyznanie <gracz> &8- &7Gracz przyznal sie do cheatow"
+				send "&8[+]&8&m-----------------&8[ &a&lNCHECK &8]&8&m-----------------&8[+]"
+			if arg-1 is "setspawn":
+				set {check::spawn} to location of player
+				send "&8» &aUstawiono spawna!"
+			if arg-1 is "spawn":
+				teleport player to {check::spawn}
+				send "&8» &aPrzeteleportowano na spawna!"
+			if arg-1 is "sprawdz":
+				if arg-2 is set:
+					set {check::%arg-2%} to true
+					set {check::loc::%arg-2%} to location of arg 2
+					set {check::loc::%player%} to location of player
+					teleport player to {check::spawn}
+					teleport arg-2 to {check::spawn}
+					add 1 to {check.sprawdzenie.%arg-2%}
+					send "&8» &aPrzeteleportowano gracza do sprawdzania!"
+					broadcast "&8[+]&8&m------------&8[ &a&lSPRAWDZANIE &8]&8&m------------&8[+]"
+					broadcast "&8» &7Admin: &a%player%"
+					broadcast "&8» &7Sprawdzany gracz: &c%arg 2%"
+					broadcast "&8» &cLogout = BAN {@logout} DNI!"
+					broadcast "&8» &aPrzyznanie = BAN {@przyznanie} DNI!"
+					broadcast "&8[+]&8&m------------&8[ &a&lSPRAWDZANIE &8]&8&m------------&8[+]"
+				if arg-2 is not set:
+					send "&8» &cPoprawne uzycie: &7/check gracz <gracz>"
+			if arg-1 is "czysty":
+				if arg-2 is set:
+					if {check::%arg-2%} is true:
+						set {check::%arg-2%} to false
+						send "&8» &7Gracz &a%arg-2% &7jest czysty!"
+						teleport player to {check::loc::%player%}
+						teleport arg-2 to {check::loc::%arg-2%}
+						add 1 to {check.czysty.%arg-2%}
+					else:
+						send "&8» &7Gracz &a%arg-2% &7nie jest sprawdzany!"
+				if arg-2 is not set:
+					send "&8» &cPoprawne uzycie: &7/check czysty <sprawdzany gracz>"
+			if arg-1 is "przyznanie":
+				if arg-2 is set:
+					if {check::%arg-2%} is true:
+						set {check::%arg-2%} to false
+						send "&8» &7Gracz &a%arg-2% &7przyznal sie do uzywania cheatow!"
+						execute console command "tempban %arg 2% {@przyznanie} d Cheaty"
+						teleport player to {check::loc::%player%}
+						teleport arg-2 to {check::loc::%arg-2%}
+						add 1 to {check.przyznanie.%arg-2%}
+					else:
+						send "&8» &7Gracz &a%arg-2% &7nie jest sprawdzany!"
+				if arg-2 is not set:
+					send "&8» &cPoprawne uzycie: &7/check przyznanie <sprawdzany gracz>"
+			if arg-1 is "cheater":
+				if arg-2 is set:
+					if {check::%arg-2%} is true:
+						set {check::%arg-2%} to false
+						send "&8» &7Gracz &a%arg-2% &7posiada cheaty!"
+						execute console command "tempban %arg 2% {@logout} d Cheaty"
+						teleport player to {check::loc::%player%}
+						teleport arg-2 to {check::loc::%arg-2%}
+						add 1 to {check.cheater.%arg-2%}
+					else:
+						send "&8» &7Gracz &a%arg-2% &7nie jest sprawdzany!"
+				if arg-2 is not set:
+					send "&8» &cPoprawne uzycie: &7/check cheater <sprawdzany gracz>"
+			if arg-1 is "status":
+				if arg-2 is set:
+					send "&8[+]&8&m-----------------&8[ &a&lNCHECK &8]&8&m-----------------&8[+]"
+					send "&8» &aGracz: &7%arg-2%"
+					send "&8» &aLiczba sprawdzen: &7%{check.sprawdzenie.%arg-2%}%"
+					send "&8» &aCzysty: &7%{check.czysty.%arg-2%}% razy"
+					send "&8» &aPrzyznal sie: &7%{check.przyznanie.%arg-2%}% razy"
+					send "&8» &aCheatowal: &7%{check.cheater.%arg-2%}% razy"
+					send "&8[+]&8&m-----------------&8[ &a&lNCHECK &8]&8&m-----------------&8[+]"
+				if arg-2 is not set:
+					send "&8» &cPoprawne uzycie: &7/check status <gracz>"
+		else:
+			send "&8» &cNiemasz permisji!"
+
+on quit:
+	if {check::%player%} is true:
+		teleport player to {check::loc::%player%}
+		send "&8» &7Gracz &c%player% &7wylogowal sie podczas sprawdzania!"
+		execute console command "tempban %player% {@logout} d Wylogowanie sie podczas sprawdzania"
+		set {check::%player%} to false
+
+on first join:
+	set {check.sprawdzenie.%player%} to 0
+	set {check.czysty.%player%} to 0
+	set {check.przyznanie.%player%} to 0
+	set {check.cheater.%player%} to 0
