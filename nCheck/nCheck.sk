@@ -38,6 +38,7 @@ command /check [<text>] [<player>]:
 			if arg-1 is "sprawdz":
 				if arg-2 is set:
 					set {check::%arg-2%} to true
+					set {check::status::%arg-2%} to "TAK"
 					set {check::loc::%arg-2%} to location of arg 2
 					set {check::loc::%player%} to location of player
 					teleport player to {check::spawn}
@@ -56,6 +57,7 @@ command /check [<text>] [<player>]:
 				if arg-2 is set:
 					if {check::%arg-2%} is true:
 						set {check::%arg-2%} to false
+						set {check::status::%arg-2%} to "NIE"
 						send "&8» &7Gracz &a%arg-2% &7jest czysty!"
 						teleport player to {check::loc::%player%}
 						teleport arg-2 to {check::loc::%arg-2%}
@@ -68,6 +70,7 @@ command /check [<text>] [<player>]:
 				if arg-2 is set:
 					if {check::%arg-2%} is true:
 						set {check::%arg-2%} to false
+						set {check::status::%arg-2%} to "NIE"
 						send "&8» &7Gracz &a%arg-2% &7przyznal sie do uzywania cheatow!"
 						execute console command "tempban %arg 2% {@przyznanie} d Cheaty"
 						teleport player to {check::loc::%player%}
@@ -81,6 +84,7 @@ command /check [<text>] [<player>]:
 				if arg-2 is set:
 					if {check::%arg-2%} is true:
 						set {check::%arg-2%} to false
+						set {check::status::%arg-2%} to "NIE"
 						send "&8» &7Gracz &a%arg-2% &7posiada cheaty!"
 						execute console command "tempban %arg 2% {@logout} d Cheaty"
 						teleport player to {check::loc::%player%}
@@ -94,6 +98,7 @@ command /check [<text>] [<player>]:
 				if arg-2 is set:
 					send "&8[+]&8&m-----------------&8[ &a&lNCHECK &8]&8&m-----------------&8[+]"
 					send "&8» &aGracz: &7%arg-2%"
+					send "&8» &aPodczas sprawdzania: &7%{check::status::%arg-2%}%"
 					send "&8» &aLiczba sprawdzen: &7%{check.sprawdzenie.%arg-2%}%"
 					send "&8» &aCzysty: &7%{check.czysty.%arg-2%}% razy"
 					send "&8» &aPrzyznal sie: &7%{check.przyznanie.%arg-2%}% razy"
@@ -110,8 +115,10 @@ on quit:
 		send "&8» &7Gracz &c%player% &7wylogowal sie podczas sprawdzania!"
 		execute console command "tempban %player% {@logout} d Wylogowanie sie podczas sprawdzania"
 		set {check::%player%} to false
+		set {check::status::%player%} to "NIE"
 
 on first join:
+	set {check::status::%player%} to "NIE"
 	set {check.sprawdzenie.%player%} to 0
 	set {check.czysty.%player%} to 0
 	set {check.przyznanie.%player%} to 0
